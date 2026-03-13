@@ -65,12 +65,20 @@ export default function SponsorsPage() {
             <p className="text-[0.84rem] text-mid-gray mb-6 leading-[1.7]">
               All packages are customizable. Reach out and we will find the right fit.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <a href="mailto:harjasan@wharton.upenn.edu?subject=SILC Sponsorship Inquiry" className="btn-primary">
-                <Mail size={14} /> harjasan@wharton.upenn.edu
+            <div className="flex flex-col items-center gap-2.5">
+              <a
+                href="mailto:harjasan@wharton.upenn.edu?subject=SILC Sponsorship Inquiry"
+                className="inline-flex items-center gap-2 text-[0.82rem] text-near-black hover:text-gold transition-colors border-b border-cream-border hover:border-gold pb-0.5"
+              >
+                <Mail size={13} className="text-gold flex-shrink-0" />
+                harjasan@wharton.upenn.edu
               </a>
-              <a href="mailto:gurjeet.singh@princeton.edu?subject=SILC Sponsorship Inquiry" className="btn-secondary">
-                <Mail size={14} /> gurjeet.singh@princeton.edu
+              <a
+                href="mailto:gurjeet.singh@princeton.edu?subject=SILC Sponsorship Inquiry"
+                className="inline-flex items-center gap-2 text-[0.82rem] text-near-black hover:text-gold transition-colors border-b border-cream-border hover:border-gold pb-0.5"
+              >
+                <Mail size={13} className="text-gold flex-shrink-0" />
+                gurjeet.singh@princeton.edu
               </a>
             </div>
           </motion.div>
