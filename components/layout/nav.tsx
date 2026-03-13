@@ -14,7 +14,7 @@ export function Nav() {
   const isHome = pathname === '/'
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
+    const onScroll = () => setScrolled(window.scrollY > 60)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -24,7 +24,6 @@ export function Nav() {
     return () => { document.body.style.overflow = '' }
   }, [mobileOpen])
 
-  // If we're not on the home page, anchor links need to be prefixed with /
   const resolveHref = (href: string) => {
     if (href.startsWith('#') && !isHome) return `/${href}`
     return href
@@ -34,13 +33,20 @@ export function Nav() {
     <motion.header
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/90 backdrop-blur-md border-b border-border' : 'bg-transparent'
+      transition={{ duration: 0.5 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? 'bg-midnight/95 backdrop-blur-md border-b border-midnight-border'
+          : isHome
+          ? 'bg-transparent'
+          : 'bg-midnight'
       }`}
     >
       <div className="container-custom flex items-center justify-between h-14 md:h-16">
-        <Link href="/" className="text-[0.7rem] font-semibold tracking-[0.25em] uppercase text-near-black">
+        <Link
+          href="/"
+          className="text-[0.7rem] font-semibold tracking-[0.25em] uppercase text-gold hover:text-gold-light transition-colors duration-300"
+        >
           {siteConfig.shortName}
         </Link>
 
@@ -49,19 +55,19 @@ export function Nav() {
             <Link
               key={link.href}
               href={resolveHref(link.href)}
-              className="text-[0.8rem] text-muted-foreground hover:text-near-black transition-colors"
+              className="text-[0.8rem] text-white/55 hover:text-white/90 transition-colors duration-300"
             >
               {link.label}
             </Link>
           ))}
-          <Link href="/rsvp" className="btn-primary !py-2 !px-4 !text-[0.72rem]">
+          <Link href="/rsvp" className="btn-primary !py-2 !px-4 !text-[0.68rem]">
             RSVP
           </Link>
         </nav>
 
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden text-near-black p-2"
+          className="md:hidden text-white/70 p-2 hover:text-white transition-colors"
           aria-label="Toggle menu"
         >
           {mobileOpen ? <X size={18} /> : <Menu size={18} />}
@@ -74,8 +80,8 @@ export function Nav() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden bg-white border-t border-border overflow-hidden"
+            transition={{ duration: 0.25 }}
+            className="md:hidden bg-midnight border-t border-midnight-border overflow-hidden"
           >
             <div className="container-custom py-6 flex flex-col gap-1">
               {navLinks.map((link) => (
@@ -83,12 +89,12 @@ export function Nav() {
                   key={link.href}
                   href={resolveHref(link.href)}
                   onClick={() => setMobileOpen(false)}
-                  className="text-sm text-muted-foreground hover:text-near-black py-2.5 border-b border-border/50"
+                  className="text-sm text-white/55 hover:text-white/90 transition-colors py-3 border-b border-midnight-border"
                 >
                   {link.label}
                 </Link>
               ))}
-              <Link href="/rsvp" onClick={() => setMobileOpen(false)} className="btn-primary mt-3 text-center">
+              <Link href="/rsvp" onClick={() => setMobileOpen(false)} className="btn-primary mt-4 text-center">
                 RSVP
               </Link>
             </div>

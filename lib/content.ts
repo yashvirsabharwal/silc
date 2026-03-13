@@ -20,7 +20,7 @@ export const siteConfig = {
   location: 'World Trade Center',
   city: 'New York City',
   food: 'Indian cuisine included',
-  dressCode: 'Business Formal',
+  dressCode: 'Business Casual',
   email: 'sikhivyleague@gmail.com',
 }
 
@@ -71,7 +71,7 @@ export const speakers: Speaker[] = [
   },
   {
     name: 'Sunpreet Singh',
-    title: 'Investment Associate',
+    title: 'Vice President',
     organization: 'Insight Partners',
     bio: 'Investor at Insight Partners across a $20B fund, focused on SaaS, AI, developer tools, and cloud infrastructure. Dartmouth College graduate. Previously at Bain & Company. Covers investment stages from Seed through Series B.',
     initials: 'SS',

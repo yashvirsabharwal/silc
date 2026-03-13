@@ -11,28 +11,45 @@ export function Footer() {
       initial="hidden"
       whileInView="visible"
       viewport={viewport}
-      className="border-t border-border bg-off-white"
+      className="bg-midnight border-t border-midnight-border"
     >
-      <div className="container-custom py-10 md:py-14">
-        <motion.div variants={stagger} className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="container-custom pt-12 pb-8 md:pt-16 md:pb-10">
+        <motion.div
+          variants={stagger}
+          className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 mb-10"
+        >
           <motion.div variants={fadeInUp}>
-            <p className="text-[0.7rem] font-semibold tracking-[0.25em] uppercase text-near-black mb-2">
+            <p className="text-[0.7rem] font-semibold tracking-[0.25em] uppercase text-gold mb-3">
               {siteConfig.shortName}
             </p>
-            <p className="text-[0.8rem] text-muted-foreground max-w-sm leading-relaxed">
-              {siteConfig.date} at the {siteConfig.location}, {siteConfig.city}.
+            <p className="text-[0.8rem] text-white/40 max-w-sm leading-relaxed">
+              {siteConfig.date} · {siteConfig.location}, {siteConfig.city}
             </p>
           </motion.div>
-          <motion.div variants={fadeInUp} className="flex items-center gap-6 text-[0.75rem] text-muted-foreground">
-            <Link href="/rsvp" className="hover:text-near-black transition-colors">RSVP</Link>
-            <Link href="/sponsors" className="hover:text-near-black transition-colors">Sponsors</Link>
-            <a href={`mailto:${siteConfig.email}`} className="hover:text-near-black transition-colors">Contact</a>
+
+          <motion.div variants={fadeInUp} className="flex flex-col items-start md:items-end gap-3">
+            <div className="flex items-center gap-6 text-[0.75rem] text-white/35">
+              <Link href="/rsvp" className="hover:text-white/70 transition-colors duration-300">RSVP</Link>
+              <Link href="/sponsors" className="hover:text-white/70 transition-colors duration-300">Sponsors</Link>
+              <a href={`mailto:${siteConfig.email}`} className="hover:text-white/70 transition-colors duration-300">Contact</a>
+            </div>
+            <div className="flex flex-col items-start md:items-end gap-1">
+              <p className="text-[0.6rem] text-white/25 tracking-wider uppercase font-medium">Outreach</p>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <a href="mailto:harjasan@wharton.upenn.edu" className="text-[0.72rem] text-white/30 hover:text-gold/70 transition-colors duration-300">
+                  harjasan@wharton.upenn.edu
+                </a>
+                <a href="mailto:gurjeet.singh@princeton.edu" className="text-[0.72rem] text-white/30 hover:text-gold/70 transition-colors duration-300">
+                  gurjeet.singh@princeton.edu
+                </a>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
 
-        <div className="divider my-8" />
+        <div className="divider-dark mb-6" />
 
-        <p className="text-[0.65rem] text-muted-foreground/60 text-center">
+        <p className="text-[0.65rem] text-white/20 text-center tracking-wider">
           &copy; {new Date().getFullYear()} {siteConfig.name}
         </p>
       </div>

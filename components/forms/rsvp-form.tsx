@@ -67,11 +67,11 @@ export function RSVPForm() {
       >
         <CheckCircle2 className="w-10 h-10 text-gold mx-auto mb-5" strokeWidth={1.5} />
         <h3 className="text-display text-xl text-near-black mb-3">You&apos;re In</h3>
-        <p className="text-[0.84rem] text-muted-foreground mb-1">
+        <p className="text-[0.84rem] text-mid-gray mb-1">
           Your seat is reserved for {siteConfig.date}.
         </p>
-        <p className="text-[0.84rem] text-muted-foreground">
-          Confirmation sent to <span className="text-near-black font-medium">{form.email}</span>.
+        <p className="text-[0.84rem] text-mid-gray">
+          We will email you shortly with more details.
         </p>
       </motion.div>
     )

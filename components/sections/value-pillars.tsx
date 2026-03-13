@@ -13,7 +13,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string; size?: n
 
 export function ValuePillars() {
   return (
-    <section className="section-padding bg-off-white border-y border-border">
+    <section className="section-padding bg-white border-y border-cream-border">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -30,14 +30,16 @@ export function ValuePillars() {
           </motion.h2>
         </motion.div>
 
-        <motion.div variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <motion.div variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {valuePillars.map((pillar) => {
             const Icon = iconMap[pillar.icon] || Users
             return (
               <motion.div key={pillar.title} variants={fadeInUp} className="card p-7 md:p-8">
-                <Icon className="text-gold mb-5" size={20} />
+                <div className="w-9 h-9 rounded-full bg-gold/8 border border-gold/15 flex items-center justify-center mb-5">
+                  <Icon className="text-gold" size={16} />
+                </div>
                 <h3 className="text-display text-lg text-near-black mb-3">{pillar.title}</h3>
-                <p className="text-[0.84rem] text-muted-foreground leading-[1.7]">{pillar.description}</p>
+                <p className="text-[0.84rem] text-mid-gray leading-[1.75]">{pillar.description}</p>
               </motion.div>
             )
           })}
