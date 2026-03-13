@@ -34,12 +34,12 @@ export function EventDetails() {
           {[
             { label: 'Date and Time', value: `${siteConfig.day}, ${siteConfig.date}`, sub: siteConfig.time },
             { label: 'Location', value: siteConfig.location, sub: siteConfig.city },
-            { label: 'Details', value: siteConfig.food, sub: siteConfig.dressCode },
+            { label: 'Dress Code', value: siteConfig.dressCode, sub: '' },
           ].map((item) => (
             <motion.div key={item.label} variants={fadeInUp} className="card text-center p-6">
               <p className="text-eyebrow !text-[0.55rem] mb-3">{item.label}</p>
-              <p className="text-[0.88rem] text-near-black font-medium mb-1">{item.value}</p>
-              <p className="text-[0.8rem] text-mid-gray">{item.sub}</p>
+              <p className={`text-[0.88rem] text-near-black font-medium ${item.sub ? 'mb-1' : ''}`}>{item.value}</p>
+              {item.sub && <p className="text-[0.8rem] text-mid-gray">{item.sub}</p>}
             </motion.div>
           ))}
         </motion.div>
