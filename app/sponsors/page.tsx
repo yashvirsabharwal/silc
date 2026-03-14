@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Check, Mail } from 'lucide-react'
-import { sponsorTiers, siteConfig } from '@/lib/content'
+import { sponsorTiers } from '@/lib/content'
 import { fadeInUp, stagger } from '@/lib/animations'
 
 export default function SponsorsPage() {
