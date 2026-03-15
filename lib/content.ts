@@ -84,7 +84,7 @@ export const agenda: AgendaBlock[] = [
   {
     time: '1:00 PM',
     title: 'Arrival and Registration',
-    description: 'Check in, receive your name badge, and connect with attendees over chai.',
+    description: 'Check in, receive your name badge, and connect with attendees over cha.',
   },
   {
     time: '1:30 PM',
