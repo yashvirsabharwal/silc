@@ -11,6 +11,13 @@ export interface Speaker {
   image?: string
   initials: string
   isRevealed: boolean
+  panel: 'experienced' | 'earlyCareer'
+}
+
+export interface Sponsor {
+  name: string
+  title: string
+  organization: string
 }
 
 export interface AgendaBlock {

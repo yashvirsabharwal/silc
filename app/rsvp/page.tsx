@@ -26,7 +26,7 @@ export default function RSVPPage() {
               Reserve Your Seat
             </motion.h1>
             <motion.p variants={fadeInUp} className="text-[0.88rem] text-white/50 leading-[1.8]">
-              Open to Sikh students and alumni from the eight Ivy League campuses.
+              Open to Sikh students and alumni from Ivy League campuses.
             </motion.p>
           </motion.div>
         </div>

@@ -6,7 +6,7 @@ import { siteConfig } from '@/lib/content'
 
 export function EventDetails() {
   return (
-    <section id="about" className="section-padding bg-cream">
+    <section id="about" className="section-padding !pb-0 bg-cream">
       <motion.div
         initial="hidden"
         whileInView="visible"

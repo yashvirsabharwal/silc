@@ -12,8 +12,8 @@ export default function Home() {
       <Hero />
       <PrestigeStrip />
       <EventDetails />
-      <ValuePillars />
       <Speakers />
+      <ValuePillars />
       <AgendaPreview />
       <SponsorsCTA />
     </main>
