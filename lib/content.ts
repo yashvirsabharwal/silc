@@ -106,7 +106,7 @@ export const speakers: Speaker[] = [
     name: 'Avi Singh',
     title: 'Investment Banking Analyst, M&A',
     organization: 'J.P. Morgan',
-    bio: 'M&A Investment Banking Analyst at J.P. Morgan. Previously a Summer Investment Associate at Citadel (L/S Equities, Consumer & TMT) and Summer Analyst at Enhanced Healthcare Partners. Duke University B.S. in Mathematics and Computer Science with a Finance minor; 3.91 GPA.',
+    bio: 'M&A Investment Banking Analyst at J.P. Morgan. Previously a Summer Investment Associate at Citadel (L/S Equities, Consumer & TMT) and Summer Analyst at Enhanced Healthcare Partners. Duke University B.S. in Mathematics and Computer Science with a Finance minor.',
     initials: 'AS',
     image: '/speakers/avi-singh.jpg',
     isRevealed: true,
