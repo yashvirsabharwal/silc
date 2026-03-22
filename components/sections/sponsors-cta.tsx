@@ -1,8 +1,6 @@
 'use client'
 
-import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
 import { sponsors, overallSponsor } from '@/lib/content'
 import { fadeInUp, stagger, viewport } from '@/lib/animations'
 
@@ -28,7 +26,7 @@ export function SponsorsCTA() {
         <motion.div variants={stagger} className="max-w-3xl mx-auto text-center">
           <motion.div variants={fadeInUp} className="accent-line mx-auto mb-7" />
           <motion.p variants={fadeInUp} className="text-eyebrow mb-4">
-            Sponsorship
+            Sponsors
           </motion.p>
           <motion.h2 variants={fadeInUp} className="text-display text-2xl md:text-[2.4rem] text-white mb-3">
             Our Sponsors
@@ -37,7 +35,7 @@ export function SponsorsCTA() {
             Sponsored by {overallSponsor.name} ({overallSponsor.fullName})
           </motion.p>
 
-          <motion.div variants={stagger} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+          <motion.div variants={stagger} className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {sponsors.map((sponsor) => (
               <motion.div
                 key={sponsor.name}
@@ -49,16 +47,6 @@ export function SponsorsCTA() {
                 <p className="text-[0.7rem] text-white/40">{sponsor.organization}</p>
               </motion.div>
             ))}
-          </motion.div>
-
-          <motion.p variants={fadeInUp} className="text-[0.88rem] text-white/50 mb-9 leading-[1.8] max-w-md mx-auto">
-            Interested in partnering with us? Packages are limited and fully customizable.
-          </motion.p>
-          <motion.div variants={fadeInUp}>
-            <Link href="/sponsors" className="btn-ghost-dark">
-              View Sponsorship Tiers
-              <ArrowRight size={14} />
-            </Link>
           </motion.div>
         </motion.div>
       </motion.div>

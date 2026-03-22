@@ -17,7 +17,7 @@ export const siteConfig = {
   date: 'April 11, 2026',
   dateShort: '04.11.26',
   day: 'Saturday',
-  time: '1:00 PM to 4:30 PM',
+  time: '1:00 PM to 5:00 PM',
   location: 'World Trade Center',
   city: 'New York City',
   food: 'Indian cuisine included',
@@ -88,6 +88,7 @@ export const speakers: Speaker[] = [
     organization: 'Insight Partners',
     bio: 'Investor at Insight Partners covering high-growth technology and software companies. Previously at Lead Edge Capital, with internships at Blackstone Real Estate PE and MSD Partners. Wharton School B.S. in Economics, graduated Summa Cum Laude; co-founder of the nonprofit Tigers Online.',
     initials: 'HS',
+    image: '/speakers/harjap-singh.jpg',
     isRevealed: true,
     panel: 'earlyCareer',
   },
@@ -240,7 +241,7 @@ export const sponsors: Sponsor[] = [
   },
   {
     name: 'Harjap Singh',
-    title: 'Former Investor',
+    title: 'Investor',
     organization: 'Insight Partners',
   },
 ]
