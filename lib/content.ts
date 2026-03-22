@@ -37,6 +37,7 @@ export const ivyLeagueSchools: IvyLeagueSchool[] = [
   { name: 'Princeton University', shortName: 'Princeton' },
   { name: 'Columbia University', shortName: 'Columbia' },
   { name: 'University of Pennsylvania', shortName: 'Penn' },
+  { name: 'Brown University', shortName: 'Brown' },
   { name: 'Dartmouth College', shortName: 'Dartmouth' },
   { name: 'Cornell University', shortName: 'Cornell' },
 ]
@@ -96,7 +97,7 @@ export const speakers: Speaker[] = [
     name: 'Jupneet Singh',
     title: 'MD Student, Harvard-MIT HST',
     organization: 'U.S. Air Force',
-    bio: 'Harvard Medical School HST MD student and U.S. Air Force Second Lieutenant training to become a trauma surgeon. First female Air Force ROTC Rhodes Scholar; first woman in the Armed Forces to receive the Paul & Daisy Soros Fellowship. MIT B.S. in Chemistry, Summa Cum Laude; commanded ROTC Detachment 365, named best in the nation.',
+    bio: 'Harvard Medical School HST MD student and U.S. Air Force Second Lieutenant training to become a trauma surgeon. First female Air Force ROTC Rhodes Scholar; first woman in the Armed Forces to receive the Paul & Daisy Soros Fellowship. MIT B.S. in Chemistry; commanded ROTC Detachment 365, named best in the nation.',
     initials: 'JS',
     image: '/speakers/jupneet-singh.jpg',
     isRevealed: true,

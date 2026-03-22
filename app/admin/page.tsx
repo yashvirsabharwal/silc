@@ -26,6 +26,7 @@ const SCHOOL_SHORT: Record<string, string> = {
   'Princeton University': 'Princeton',
   'Columbia University': 'Columbia',
   'University of Pennsylvania': 'Penn',
+  'Brown University': 'Brown',
   'Dartmouth College': 'Dartmouth',
   'Cornell University': 'Cornell',
 }
