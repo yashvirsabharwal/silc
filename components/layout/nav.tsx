@@ -63,6 +63,9 @@ export function Nav() {
           <Link href="/rsvp" className="btn-primary !py-2 !px-4 !text-[0.68rem]">
             RSVP
           </Link>
+          <Link href="/admin" className="text-[0.7rem] text-white/25 hover:text-white/60 transition-colors duration-300">
+            Admin
+          </Link>
         </nav>
 
         <button
@@ -96,6 +99,9 @@ export function Nav() {
               ))}
               <Link href="/rsvp" onClick={() => setMobileOpen(false)} className="btn-primary mt-4 text-center">
                 RSVP
+              </Link>
+              <Link href="/admin" onClick={() => setMobileOpen(false)} className="text-[0.75rem] text-white/25 hover:text-white/60 transition-colors text-center mt-2">
+                Admin
               </Link>
             </div>
           </motion.div>
