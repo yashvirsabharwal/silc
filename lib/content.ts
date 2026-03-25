@@ -37,7 +37,6 @@ export const ivyLeagueSchools: IvyLeagueSchool[] = [
   { name: 'Princeton University', shortName: 'Princeton' },
   { name: 'Columbia University', shortName: 'Columbia' },
   { name: 'University of Pennsylvania', shortName: 'Penn' },
-  { name: 'Brown University', shortName: 'Brown' },
   { name: 'Dartmouth College', shortName: 'Dartmouth' },
   { name: 'Cornell University', shortName: 'Cornell' },
 ]
