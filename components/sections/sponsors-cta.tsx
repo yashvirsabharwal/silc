@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { sponsors, overallSponsor } from '@/lib/content'
+import { sponsors } from '@/lib/content'
 import { fadeInUp, stagger, viewport } from '@/lib/animations'
 
 export function SponsorsCTA() {
@@ -32,7 +32,7 @@ export function SponsorsCTA() {
             Our Sponsors
           </motion.h2>
           <motion.p variants={fadeInUp} className="text-[0.78rem] text-gold font-medium tracking-widest uppercase mb-8">
-            Sponsored by {overallSponsor.name} ({overallSponsor.fullName})
+            Co-Sponsored by United Sikh Movement (USM) and Sikhs of NY (SONY)
           </motion.p>
 
           <motion.div variants={stagger} className="grid grid-cols-2 md:grid-cols-4 gap-4">

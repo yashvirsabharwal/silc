@@ -472,17 +472,19 @@ export default function AdminPage() {
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => startEdit(r)}
-                                  className="p-1.5 rounded text-white/25 hover:text-white/70 hover:bg-white/[0.06] transition-colors"
+                                  className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-white/85 hover:bg-white/[0.06] transition-colors"
                                   title="Edit"
                                 >
                                   <Pencil size={13} />
+                                  <span className="text-[0.72rem]">Edit</span>
                                 </button>
                                 <button
                                   onClick={() => setDeletingId(r.id)}
-                                  className="p-1.5 rounded text-white/25 hover:text-red-400 hover:bg-red-400/[0.08] transition-colors"
+                                  className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-red-400 hover:bg-red-400/[0.08] transition-colors"
                                   title="Delete"
                                 >
                                   <Trash2 size={13} />
+                                  <span className="text-[0.72rem]">Remove</span>
                                 </button>
                               </div>
                             )}
