@@ -6,7 +6,7 @@ import { speakers } from '@/lib/content'
 import { fadeInUp, stagger, viewport } from '@/lib/animations'
 import type { Speaker } from '@/lib/types'
 
-function SpeakerPhoto({ speaker }: { speaker: Speaker }) {
+function SpeakerPhoto({ speaker }: Readonly<{ speaker: Speaker }>) {
   if (speaker.image) {
     return (
       <div className="w-12 h-12 rounded-full overflow-hidden border border-cream-border flex-shrink-0 bg-cream">
@@ -28,7 +28,7 @@ function SpeakerPhoto({ speaker }: { speaker: Speaker }) {
   )
 }
 
-function SpeakerCard({ speaker }: { speaker: Speaker }) {
+function SpeakerCard({ speaker }: Readonly<{ speaker: Speaker }>) {
   return (
     <motion.div variants={fadeInUp} className="card p-5 md:p-6 flex flex-col h-full">
       <div className="flex items-start gap-3.5">
@@ -47,7 +47,7 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
   )
 }
 
-function SpeakerPanel({ title, panelSpeakers }: { title: string; panelSpeakers: Speaker[] }) {
+function SpeakerPanel({ title, panelSpeakers }: Readonly<{ title: string; panelSpeakers: Speaker[] }>) {
   return (
     <motion.div
       initial="hidden"

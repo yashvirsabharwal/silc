@@ -88,6 +88,7 @@ export const speakers: Speaker[] = [
     organization: 'Blackstone',
     bio: 'Private Equity Associate at Blackstone Capital Partners. Previously an Investment Banking Analyst at Evercore in Liability Management & Restructuring and a Special Situations Analyst at APL Group covering real estate and digital infrastructure. Wharton School B.S. in Finance and Accounting, Summa Cum Laude.',
     initials: 'JS',
+    image: '/speakers/jaspreet-singh.jpg',
     isRevealed: true,
     panel: 'earlyCareer',
   },

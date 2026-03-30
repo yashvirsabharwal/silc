@@ -23,7 +23,9 @@ type RSVPRecord = {
 const currentYear = new Date().getFullYear()
 const graduationYears = Array.from({ length: 6 }, (_, i) => currentYear + i)
 
-function Field({ label, value }: { label: string; value: string | null | undefined }) {
+const IVY_SCHOOL_NAMES = new Set(ivyLeagueSchools.map((s) => s.name))
+
+function Field({ label, value }: Readonly<{ label: string; value: string | null | undefined }>) {
   return (
     <div>
       <p className="text-[0.63rem] text-mid-gray tracking-wider uppercase font-medium mb-1">{label}</p>
@@ -40,34 +42,55 @@ export default function ManageRSVPPage() {
   const [record, setRecord] = useState<RSVPRecord | null>(null)
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState<Partial<RSVPRecord>>({})
+  const [schoolSelect, setSchoolSelect] = useState('')
+  const [otherSchool, setOtherSchool] = useState('')
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
-  const handleLookup = async (e: React.FormEvent) => {
+  const isIvySchool = (school: string) => IVY_SCHOOL_NAMES.has(school)
+
+  const hydrateSchoolState = (school: string) => {
+    if (isIvySchool(school)) {
+      setSchoolSelect(school)
+      setOtherSchool('')
+      setEditForm((p) => ({ ...p, school }))
+      return
+    }
+    setSchoolSelect('Other')
+    setOtherSchool(school)
+    setEditForm((p) => ({ ...p, school: 'Other' }))
+  }
+
+  const handleLookup = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLookupStatus('loading')
-    const { data } = await supabase
-      .from('rsvps')
-      .select('*')
-      .eq('email', email.trim().toLowerCase())
-      .single()
 
-    if (data) {
-      setRecord(data)
-      setEditForm(data)
-      setLookupStatus('found')
-    } else {
-      setLookupStatus('not_found')
-    }
+    void (async () => {
+      const { data } = await supabase
+        .from('rsvps')
+        .select('*')
+        .eq('email', email.trim().toLowerCase())
+        .single()
+
+      if (data) {
+        setRecord(data)
+        setEditForm(data)
+        hydrateSchoolState(data.school)
+        setLookupStatus('found')
+      } else {
+        setLookupStatus('not_found')
+      }
+    })()
   }
 
   const handleSave = async () => {
     if (!record) return
     setSaveStatus('saving')
+    const schoolToSave = schoolSelect === 'Other' ? otherSchool.trim() : schoolSelect
     const { error } = await supabase
       .from('rsvps')
       .update({
         full_name: editForm.full_name,
-        school: editForm.school,
+        school: schoolToSave,
         graduation_year: editForm.graduation_year,
         major: editForm.major || null,
         linkedin_url: editForm.linkedin_url || null,
@@ -78,7 +101,7 @@ export default function ManageRSVPPage() {
     if (error) {
       setSaveStatus('error')
     } else {
-      setRecord({ ...record, ...editForm } as RSVPRecord)
+      setRecord({ ...record, ...editForm, school: schoolToSave } as RSVPRecord)
       setSaveStatus('saved')
       setEditing(false)
       setTimeout(() => setSaveStatus('idle'), 2000)
@@ -140,7 +163,7 @@ export default function ManageRSVPPage() {
                     Registered
                   </div>
                   {!editing && (
-                    <button onClick={() => { setEditing(true); setEditForm(record) }}
+                    <button onClick={() => { setEditing(true); setEditForm(record); hydrateSchoolState(record.school) }}
                       className="inline-flex items-center gap-1.5 text-[0.75rem] text-near-black hover:text-gold transition-colors">
                       <Pencil size={12} /> Edit
                     </button>
@@ -167,39 +190,69 @@ export default function ManageRSVPPage() {
                 ) : (
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">Full Name</label>
-                      <input type="text" value={editForm.full_name || ''} onChange={(e) => setEditForm(p => ({ ...p, full_name: e.target.value }))}
+                      <label htmlFor="edit_full_name" className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">Full Name</label>
+                      <input id="edit_full_name" type="text" value={editForm.full_name || ''} onChange={(e) => setEditForm(p => ({ ...p, full_name: e.target.value }))}
                         className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black" />
                     </div>
                     <div>
-                      <label className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">School</label>
-                      <select value={editForm.school || ''} onChange={(e) => setEditForm(p => ({ ...p, school: e.target.value }))}
+                      <label htmlFor="edit_school" className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">School</label>
+                      <select
+                        id="edit_school"
+                        value={schoolSelect}
+                        onChange={(e) => {
+                          const next = e.target.value
+                          setSchoolSelect(next)
+                          setEditForm((p) => ({ ...p, school: next }))
+                          if (next !== 'Other') setOtherSchool('')
+                        }}
                         className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black appearance-none">
+                        <option value="">Select your school</option>
                         {ivyLeagueSchools.map((s) => <option key={s.name} value={s.name}>{s.name}</option>)}
+                        <option value="Other">Other</option>
                       </select>
                     </div>
+                    <AnimatePresence>
+                      {schoolSelect === 'Other' && (
+                        <motion.div
+                          variants={fadeInUp}
+                          initial="hidden"
+                          animate="visible"
+                          exit={{ opacity: 0, y: -4 }}
+                        >
+                          <label htmlFor="edit_other_school" className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">School Name</label>
+                          <input
+                            id="edit_other_school"
+                            type="text"
+                            value={otherSchool}
+                            onChange={(e) => setOtherSchool(e.target.value)}
+                            className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black"
+                            placeholder="Enter your school"
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">Grad Year</label>
-                        <select value={editForm.graduation_year || currentYear} onChange={(e) => setEditForm(p => ({ ...p, graduation_year: Number(e.target.value) }))}
+                        <label htmlFor="edit_graduation_year" className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">Grad Year</label>
+                        <select id="edit_graduation_year" value={editForm.graduation_year || currentYear} onChange={(e) => setEditForm(p => ({ ...p, graduation_year: Number(e.target.value) }))}
                           className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black appearance-none">
                           {graduationYears.map((y) => <option key={y} value={y}>{y}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">Major</label>
-                        <input type="text" value={editForm.major || ''} onChange={(e) => setEditForm(p => ({ ...p, major: e.target.value }))}
+                        <label htmlFor="edit_major" className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">Major</label>
+                        <input id="edit_major" type="text" value={editForm.major || ''} onChange={(e) => setEditForm(p => ({ ...p, major: e.target.value }))}
                           className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black" placeholder="e.g. CS" />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">LinkedIn URL</label>
-                      <input type="url" value={editForm.linkedin_url || ''} onChange={(e) => setEditForm(p => ({ ...p, linkedin_url: e.target.value }))}
+                      <label htmlFor="edit_linkedin_url" className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">LinkedIn URL</label>
+                      <input id="edit_linkedin_url" type="url" value={editForm.linkedin_url || ''} onChange={(e) => setEditForm(p => ({ ...p, linkedin_url: e.target.value }))}
                         className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black" placeholder="https://linkedin.com/in/..." />
                     </div>
                     <div>
-                      <label className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">Dietary Restrictions</label>
-                      <input type="text" value={editForm.dietary_restrictions || ''} onChange={(e) => setEditForm(p => ({ ...p, dietary_restrictions: e.target.value }))}
+                      <label htmlFor="edit_dietary_restrictions" className="block text-[0.65rem] text-mid-gray mb-1.5 tracking-wider uppercase font-medium">Dietary Restrictions</label>
+                      <input id="edit_dietary_restrictions" type="text" value={editForm.dietary_restrictions || ''} onChange={(e) => setEditForm(p => ({ ...p, dietary_restrictions: e.target.value }))}
                         className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black" placeholder="Vegetarian, vegan, allergies..." />
                     </div>
                     <div className="flex gap-3 pt-1">
@@ -208,7 +261,7 @@ export default function ManageRSVPPage() {
                           : saveStatus === 'saved' ? <><Check className="w-4 h-4" /> Saved</>
                           : 'Save Changes'}
                       </button>
-                      <button onClick={() => setEditing(false)} className="btn-secondary px-5">Cancel</button>
+                      <button onClick={() => { setEditing(false); if (record) hydrateSchoolState(record.school) }} className="btn-secondary px-5">Cancel</button>
                     </div>
                     {saveStatus === 'error' && <p className="text-[0.8rem] text-destructive">Something went wrong. Please try again.</p>}
                   </div>

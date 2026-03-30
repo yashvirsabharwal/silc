@@ -21,6 +21,7 @@ export function RSVPForm() {
     linkedin_url: '',
     dietary_restrictions: '',
   })
+  const [otherSchool, setOtherSchool] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -28,34 +29,43 @@ export function RSVPForm() {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     setStatus('loading')
     setErrorMsg('')
 
-    try {
-      const { error } = await supabase.from('rsvps').insert([{
-        full_name: form.full_name.trim(),
-        email: form.email.trim().toLowerCase(),
-        school: form.school,
-        graduation_year: form.graduation_year,
-        major: form.major.trim() || null,
-        linkedin_url: form.linkedin_url.trim() || null,
-        dietary_restrictions: form.dietary_restrictions.trim() || null,
-      }])
+    void (async () => {
+      try {
+        const schoolToSave = form.school === 'Other' ? otherSchool.trim() : form.school
+        if (!schoolToSave) {
+          setErrorMsg('Please enter your school.')
+          setStatus('error')
+          return
+        }
 
-      if (error) {
-        setErrorMsg(error.code === '23505'
-          ? 'This email has already been registered. See you there!'
-          : 'Something went wrong. Please try again.')
+        const { error } = await supabase.from('rsvps').insert([{
+          full_name: form.full_name.trim(),
+          email: form.email.trim().toLowerCase(),
+          school: schoolToSave,
+          graduation_year: form.graduation_year,
+          major: form.major.trim() || null,
+          linkedin_url: form.linkedin_url.trim() || null,
+          dietary_restrictions: form.dietary_restrictions.trim() || null,
+        }])
+
+        if (error) {
+          setErrorMsg(error.code === '23505'
+            ? 'This email has already been registered. See you there!'
+            : 'Something went wrong. Please try again.')
+          setStatus('error')
+          return
+        }
+        setStatus('success')
+      } catch {
+        setErrorMsg('Something went wrong. Please try again.')
         setStatus('error')
-        return
       }
-      setStatus('success')
-    } catch {
-      setErrorMsg('Something went wrong. Please try again.')
-      setStatus('error')
-    }
+    })()
   }
 
   if (status === 'success') {
@@ -106,12 +116,45 @@ export function RSVPForm() {
           <label htmlFor="school" className="block text-[0.68rem] text-muted-foreground mb-1.5 tracking-wider uppercase font-medium">
             School <span className="text-gold">*</span>
           </label>
-          <select id="school" required value={form.school} onChange={(e) => update('school', e.target.value)}
+          <select
+            id="school"
+            required
+            value={form.school}
+            onChange={(e) => {
+              const next = e.target.value
+              update('school', next)
+              if (next !== 'Other') setOtherSchool('')
+            }}
             className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black appearance-none cursor-pointer">
             <option value="">Select your school</option>
             {ivyLeagueSchools.map((s) => <option key={s.name} value={s.name}>{s.name}</option>)}
+            <option value="Other">Other</option>
           </select>
         </div>
+
+        <AnimatePresence>
+          {form.school === 'Other' && (
+            <motion.div
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, y: -4 }}
+            >
+              <label htmlFor="other_school" className="block text-[0.68rem] text-muted-foreground mb-1.5 tracking-wider uppercase font-medium">
+                School Name <span className="text-gold">*</span>
+              </label>
+              <input
+                id="other_school"
+                type="text"
+                required
+                value={otherSchool}
+                onChange={(e) => setOtherSchool(e.target.value)}
+                className="form-input w-full px-3.5 py-2.5 text-[0.85rem] text-near-black placeholder:text-muted-foreground/40"
+                placeholder="Enter your school"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="grid grid-cols-2 gap-4">
           <div>

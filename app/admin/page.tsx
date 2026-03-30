@@ -400,7 +400,15 @@ export default function AdminPage() {
                             )}
                           </td>
                           <td className="px-4 py-3 text-[0.78rem] text-white/70 whitespace-nowrap">
-                            {SCHOOL_SHORT[r.school] ?? r.school}
+                            {isEditing ? (
+                              <input
+                                className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
+                                value={editValues.school ?? ''}
+                                onChange={(e) => setEditValues((v) => ({ ...v, school: e.target.value }))}
+                              />
+                            ) : (
+                              SCHOOL_SHORT[r.school] ?? r.school
+                            )}
                           </td>
                           <td className="px-4 py-3 text-[0.78rem] text-white/55 whitespace-nowrap">
                             {isEditing ? (

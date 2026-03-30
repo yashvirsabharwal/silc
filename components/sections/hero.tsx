@@ -50,6 +50,13 @@ export function Hero() {
             {siteConfig.description}
           </motion.p>
 
+          <motion.p
+            variants={fadeInUp}
+            className="text-[0.78rem] text-white/40 tracking-wide mb-9"
+          >
+            Co-Sponsored by United Sikh Movement (USM) and Sikhs of NY (SONY)
+          </motion.p>
+
           <motion.div
             variants={fadeInUp}
             className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12"
