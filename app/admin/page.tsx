@@ -173,7 +173,7 @@ export default function AdminPage() {
     <main className="min-h-screen bg-midnight text-white">
       {/* Header */}
       <div className="border-b border-midnight-border">
-        <div className="container-custom flex items-center justify-between h-14">
+        <div className="container-custom max-w-[1400px] flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
             <span className="text-[0.7rem] font-semibold tracking-[0.25em] uppercase text-gold">
               {siteConfig.shortName}
@@ -200,7 +200,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="container-custom py-8 md:py-12">
+      <div className="container-custom max-w-[1400px] py-8 md:py-12">
         <motion.div variants={stagger} initial="hidden" animate="visible">
 
           {/* Stats row */}
