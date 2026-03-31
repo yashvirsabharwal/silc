@@ -225,13 +225,18 @@ export const overallSponsor = {
 
 export const sponsors: Sponsor[] = [
   {
+    name: 'Rick Singh',
+    title: 'Chief Growth Officer',
+    organization: 'Fiserv',
+  },
+  {
     name: 'Manraj Singh',
     title: 'Founding Partner',
     organization: 'Vicus Ventures',
   },
   {
     name: 'GS Suri',
-    title: 'Implementation Lead',
+    title: 'Founding Engineer',
     organization: 'Tabs',
   },
   {

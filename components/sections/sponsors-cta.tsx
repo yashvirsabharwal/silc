@@ -23,7 +23,7 @@ export function SponsorsCTA() {
         viewport={viewport}
         className="relative container-custom"
       >
-        <motion.div variants={stagger} className="max-w-3xl mx-auto text-center">
+        <motion.div variants={stagger} className="max-w-5xl mx-auto text-center">
           <motion.div variants={fadeInUp} className="accent-line mx-auto mb-7" />
           <motion.p variants={fadeInUp} className="text-eyebrow mb-4">
             Sponsors
@@ -34,8 +34,19 @@ export function SponsorsCTA() {
           <motion.p variants={fadeInUp} className="text-[0.78rem] text-gold font-medium tracking-widest uppercase mb-8">
             Co-Sponsored by United Sikh Movement (USM) and Sikhs of NY (SONY)
           </motion.p>
+          <motion.p
+            variants={fadeInUp}
+            className="text-[0.78rem] text-white/55 leading-[1.7] mb-8 max-w-2xl mx-auto"
+          >
+            <span className="block italic">
+              USM is a non-profit organization dedicated to the promotion of Sikh culture and heritage.
+            </span>
+            <span className="block italic mt-1">
+              SONY is a community that brings together Sikh professionals to support their career and Sikhi development.
+            </span>
+          </motion.p>
 
-          <motion.div variants={stagger} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <motion.div variants={stagger} className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {sponsors.map((sponsor) => (
               <motion.div
                 key={sponsor.name}
