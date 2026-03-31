@@ -17,6 +17,7 @@ type RSVPRecord = {
   major: string | null
   linkedin_url: string | null
   dietary_restrictions: string | null
+  status: 'rsvp' | 'waitlist'
   created_at: string
 }
 
@@ -159,8 +160,8 @@ export default function ManageRSVPPage() {
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="card p-6 md:p-8">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2 text-[0.8rem] text-mid-gray">
-                    <CheckCircle2 size={14} className="text-gold" />
-                    Registered
+                    <CheckCircle2 size={14} className={record.status === 'waitlist' ? 'text-amber-500' : 'text-gold'} />
+                    {record.status === 'waitlist' ? 'On Waitlist' : 'Confirmed'}
                   </div>
                   {!editing && (
                     <button onClick={() => { setEditing(true); setEditForm(record); hydrateSchoolState(record.school) }}

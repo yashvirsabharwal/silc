@@ -77,12 +77,12 @@ export function RSVPForm() {
         className="card p-8 md:p-12 text-center max-w-md mx-auto"
       >
         <CheckCircle2 className="w-10 h-10 text-gold mx-auto mb-5" strokeWidth={1.5} />
-        <h3 className="text-display text-xl text-near-black mb-3">You&apos;re In</h3>
+        <h3 className="text-display text-xl text-near-black mb-3">You&apos;re on the Waitlist</h3>
         <p className="text-[0.84rem] text-mid-gray mb-1">
-          Your seat is reserved for {siteConfig.date}.
+          We&apos;ve added you to the waitlist for {siteConfig.date}.
         </p>
         <p className="text-[0.84rem] text-mid-gray">
-          We will email you shortly with more details.
+          We&apos;ll email you once your spot is confirmed.
         </p>
       </motion.div>
     )

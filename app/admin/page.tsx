@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { RefreshCw, LogOut, Download, Users, GraduationCap, Trash2, Pencil, X, Check, UserPlus } from 'lucide-react'
+import { RefreshCw, LogOut, Download, Users, GraduationCap, Trash2, Pencil, X, Check, UserPlus, ArrowUpCircle, ArrowDownCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { siteConfig } from '@/lib/content'
 import { fadeInUp, stagger } from '@/lib/animations'
@@ -17,7 +17,7 @@ type RSVP = {
   major: string | null
   linkedin_url: string | null
   dietary_restrictions: string | null
-  status?: 'rsvp' | 'waitlist' | null
+  status: 'rsvp' | 'waitlist'
   created_at: string
 }
 
@@ -66,7 +66,7 @@ export default function AdminPage() {
   }
 
   const downloadCSV = () => {
-    const headers = ['Name', 'Email', 'School', 'Grad Year', 'Major', 'LinkedIn', 'Dietary Restrictions', 'Registered At']
+    const headers = ['Name', 'Email', 'School', 'Grad Year', 'Major', 'LinkedIn', 'Dietary Restrictions', 'Status', 'Registered At']
     const rows = rsvps.map((r) => [
       r.full_name,
       r.email,
@@ -75,6 +75,7 @@ export default function AdminPage() {
       r.major ?? '',
       r.linkedin_url ?? '',
       r.dietary_restrictions ?? '',
+      r.status,
       new Date(r.created_at).toLocaleString(),
     ])
     const csv = [headers, ...rows].map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
@@ -95,6 +96,7 @@ export default function AdminPage() {
       school: r.school,
       graduation_year: r.graduation_year,
       major: r.major ?? '',
+      linkedin_url: r.linkedin_url ?? '',
       dietary_restrictions: r.dietary_restrictions ?? '',
     })
   }
@@ -114,6 +116,7 @@ export default function AdminPage() {
         school: editValues.school,
         graduation_year: editValues.graduation_year,
         major: editValues.major || null,
+        linkedin_url: editValues.linkedin_url || null,
         dietary_restrictions: editValues.dietary_restrictions || null,
       })
       .eq('id', id)
@@ -174,7 +177,23 @@ export default function AdminPage() {
     setSaving(false)
   }
 
-  const confirmedRsvps = rsvps.filter((r) => (r.status ?? 'rsvp') !== 'waitlist')
+  const toggleStatus = async (id: string, newStatus: 'rsvp' | 'waitlist') => {
+    const { data, error } = await supabase
+      .from('rsvps')
+      .update({ status: newStatus })
+      .eq('id', id)
+      .select('id')
+    if (!error && (data?.length ?? 0) > 0) {
+      setRsvps((prev) => prev.map((r) => r.id === id ? { ...r, status: newStatus } : r))
+      setActionError('')
+    } else if (error) {
+      setActionError(error.message)
+    } else {
+      setActionError('Status update failed. Check Supabase RLS/policies.')
+    }
+  }
+
+  const confirmedRsvps = rsvps.filter((r) => r.status !== 'waitlist')
   const waitlistRsvps = rsvps.filter((r) => r.status === 'waitlist')
 
   // Stats
@@ -221,13 +240,27 @@ export default function AdminPage() {
         <motion.div variants={stagger} initial="hidden" animate="visible">
 
           {/* Stats row */}
-          <motion.div variants={fadeInUp} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <motion.div variants={fadeInUp} className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             <div className="bg-white/[0.03] border border-midnight-border rounded-lg p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Users size={14} className="text-gold/70" />
-                <p className="text-[0.62rem] text-white/35 tracking-wider uppercase font-medium">Total RSVPs</p>
+                <p className="text-[0.62rem] text-white/35 tracking-wider uppercase font-medium">Total</p>
               </div>
               <p className="text-3xl font-light text-white">{rsvps.length}</p>
+            </div>
+            <div className="bg-white/[0.03] border border-midnight-border rounded-lg p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Check size={14} className="text-green-400/70" />
+                <p className="text-[0.62rem] text-white/35 tracking-wider uppercase font-medium">Confirmed</p>
+              </div>
+              <p className="text-3xl font-light text-green-400">{confirmedRsvps.length}</p>
+            </div>
+            <div className="bg-white/[0.03] border border-midnight-border rounded-lg p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Users size={14} className="text-amber-400/70" />
+                <p className="text-[0.62rem] text-white/35 tracking-wider uppercase font-medium">Waitlist</p>
+              </div>
+              <p className="text-3xl font-light text-amber-400">{waitlistRsvps.length}</p>
             </div>
             <div className="bg-white/[0.03] border border-midnight-border rounded-lg p-5">
               <div className="flex items-center gap-2 mb-2">
@@ -236,7 +269,7 @@ export default function AdminPage() {
               </div>
               <p className="text-3xl font-light text-white">{Object.keys(schoolCounts).length}</p>
             </div>
-            <div className="bg-white/[0.03] border border-midnight-border rounded-lg p-5 col-span-2">
+            <div className="bg-white/[0.03] border border-midnight-border rounded-lg p-5 col-span-2 md:col-span-1">
               <p className="text-[0.62rem] text-white/35 tracking-wider uppercase font-medium mb-3">By School</p>
               <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                 {Object.entries(schoolCounts)
@@ -502,6 +535,14 @@ export default function AdminPage() {
                                   <span className="text-[0.72rem]">Edit</span>
                                 </button>
                                 <button
+                                  onClick={() => toggleStatus(r.id, 'waitlist')}
+                                  className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-amber-400 hover:bg-amber-400/[0.08] transition-colors"
+                                  title="Move to Waitlist"
+                                >
+                                  <ArrowDownCircle size={13} />
+                                  <span className="text-[0.72rem]">Waitlist</span>
+                                </button>
+                                <button
                                   onClick={() => setDeletingId(r.id)}
                                   className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-red-400 hover:bg-red-400/[0.08] transition-colors"
                                   title="Delete"
@@ -654,6 +695,14 @@ export default function AdminPage() {
                                 </div>
                               ) : (
                                 <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => toggleStatus(r.id, 'rsvp')}
+                                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-green-400 hover:bg-green-400/[0.08] transition-colors"
+                                    title="Confirm RSVP"
+                                  >
+                                    <ArrowUpCircle size={13} />
+                                    <span className="text-[0.72rem]">Confirm</span>
+                                  </button>
                                   <button
                                     onClick={() => startEdit(r)}
                                     className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-white/85 hover:bg-white/[0.06] transition-colors"
