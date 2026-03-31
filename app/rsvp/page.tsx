@@ -23,7 +23,7 @@ export default function RSVPPage() {
               {siteConfig.date} · {siteConfig.location}
             </motion.p>
             <motion.h1 variants={fadeInUp} className="text-editorial text-2xl md:text-4xl text-white mb-4">
-              Reserve Your Seat
+              Join the Waitlist
             </motion.h1>
             <motion.p variants={fadeInUp} className="text-[0.88rem] text-white/50 leading-[1.8]">
               Open to all Sikh students and alumni. You do not need to attend an Ivy League school to join us — all are welcome.

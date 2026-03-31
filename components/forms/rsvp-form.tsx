@@ -51,6 +51,7 @@ export function RSVPForm() {
           major: form.major.trim() || null,
           linkedin_url: form.linkedin_url.trim() || null,
           dietary_restrictions: form.dietary_restrictions.trim() || null,
+          status: 'waitlist',
         }])
 
         if (error) {

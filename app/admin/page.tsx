@@ -17,6 +17,7 @@ type RSVP = {
   major: string | null
   linkedin_url: string | null
   dietary_restrictions: string | null
+  status?: 'rsvp' | 'waitlist' | null
   created_at: string
 }
 
@@ -42,6 +43,7 @@ export default function AdminPage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [addValues, setAddValues] = useState({ full_name: '', email: '', school: '', graduation_year: '', major: '', dietary_restrictions: '' })
   const [addError, setAddError] = useState('')
+  const [actionError, setActionError] = useState('')
 
   const fetchRSVPs = useCallback(async () => {
     setLoading(true)
@@ -104,7 +106,7 @@ export default function AdminPage() {
 
   const saveEdit = async (id: string) => {
     setSaving(true)
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('rsvps')
       .update({
         full_name: editValues.full_name,
@@ -115,8 +117,14 @@ export default function AdminPage() {
         dietary_restrictions: editValues.dietary_restrictions || null,
       })
       .eq('id', id)
-    if (!error) {
+      .select('id')
+    if (!error && (data?.length ?? 0) > 0) {
       setRsvps((prev) => prev.map((r) => r.id === id ? { ...r, ...editValues } as RSVP : r))
+      setActionError('')
+    } else if (error) {
+      setActionError(error.message)
+    } else {
+      setActionError('Update failed (no rows affected). Check Supabase RLS/policies for admin updates.')
     }
     setEditingId(null)
     setEditValues({})
@@ -124,9 +132,14 @@ export default function AdminPage() {
   }
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('rsvps').delete().eq('id', id)
-    if (!error) {
+    const { data, error } = await supabase.from('rsvps').delete().eq('id', id).select('id')
+    if (!error && (data?.length ?? 0) > 0) {
       setRsvps((prev) => prev.filter((r) => r.id !== id))
+      setActionError('')
+    } else if (error) {
+      setActionError(error.message)
+    } else {
+      setActionError('Delete failed (no rows affected). Check Supabase RLS/policies for admin deletes.')
     }
     setDeletingId(null)
   }
@@ -147,6 +160,7 @@ export default function AdminPage() {
         graduation_year: Number(addValues.graduation_year),
         major: addValues.major || null,
         dietary_restrictions: addValues.dietary_restrictions || null,
+        status: 'rsvp',
       })
       .select()
       .single()
@@ -159,6 +173,9 @@ export default function AdminPage() {
     }
     setSaving(false)
   }
+
+  const confirmedRsvps = rsvps.filter((r) => (r.status ?? 'rsvp') !== 'waitlist')
+  const waitlistRsvps = rsvps.filter((r) => r.status === 'waitlist')
 
   // Stats
   const schoolCounts = rsvps.reduce<Record<string, number>>((acc, r) => {
@@ -345,13 +362,19 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* Table */}
+          {actionError && (
+            <motion.div variants={fadeInUp} className="mb-4 p-3.5 rounded-md bg-red-500/10 border border-red-500/20">
+              <p className="text-[0.8rem] text-red-300">{actionError}</p>
+            </motion.div>
+          )}
+
+          {/* RSVPs table */}
           <motion.div variants={fadeInUp} className="border border-midnight-border rounded-lg overflow-hidden">
             {loading ? (
               <div className="flex items-center justify-center py-16 text-white/30 text-sm">
                 <RefreshCw size={16} className="animate-spin mr-2" /> Loading...
               </div>
-            ) : rsvps.length === 0 ? (
+            ) : confirmedRsvps.length === 0 ? (
               <div className="flex items-center justify-center py-16 text-white/30 text-sm">
                 No RSVPs yet.
               </div>
@@ -368,7 +391,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {rsvps.map((r, i) => {
+                    {confirmedRsvps.map((r, i) => {
                       const isEditing = editingId === r.id
                       return (
                         <tr
@@ -496,6 +519,168 @@ export default function AdminPage() {
                 </table>
               </div>
             )}
+          </motion.div>
+
+          {/* Waitlist table */}
+          <motion.div variants={fadeInUp} className="mt-8">
+            <div className="flex items-end justify-between mb-3">
+              <div>
+                <h2 className="text-[0.9rem] text-white font-medium">Waitlist</h2>
+                <p className="text-[0.65rem] text-white/25 mt-0.5">{waitlistRsvps.length} on waitlist</p>
+              </div>
+            </div>
+
+            <div className="border border-midnight-border rounded-lg overflow-hidden">
+              {loading ? (
+                <div className="flex items-center justify-center py-12 text-white/30 text-sm">
+                  <RefreshCw size={16} className="animate-spin mr-2" /> Loading...
+                </div>
+              ) : waitlistRsvps.length === 0 ? (
+                <div className="flex items-center justify-center py-12 text-white/30 text-sm">
+                  No waitlist signups yet.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-midnight-border bg-white/[0.02]">
+                        {['Name', 'Email', 'School', 'Year', 'Major', 'Dietary', 'Registered', ''].map((h) => (
+                          <th key={h} className="px-4 py-3 text-[0.62rem] text-white/35 tracking-wider uppercase font-medium whitespace-nowrap">
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {waitlistRsvps.map((r, i) => {
+                        const isEditing = editingId === r.id
+                        return (
+                          <tr
+                            key={r.id}
+                            className={`border-b border-midnight-border/50 transition-colors ${
+                              isEditing ? 'bg-gold/[0.04]' : i % 2 === 0 ? 'hover:bg-white/[0.02]' : 'bg-white/[0.01] hover:bg-white/[0.02]'
+                            }`}
+                          >
+                            <td className="px-4 py-3 text-[0.82rem] whitespace-nowrap font-medium">
+                              {isEditing ? (
+                                <input
+                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-36"
+                                  value={editValues.full_name ?? ''}
+                                  onChange={(e) => setEditValues((v) => ({ ...v, full_name: e.target.value }))}
+                                />
+                              ) : (
+                                <span className="text-white/90">{r.full_name}</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-[0.78rem] whitespace-nowrap">
+                              {isEditing ? (
+                                <input
+                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
+                                  value={editValues.email ?? ''}
+                                  onChange={(e) => setEditValues((v) => ({ ...v, email: e.target.value }))}
+                                />
+                              ) : (
+                                <span className="text-white/55">{r.email}</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-[0.78rem] text-white/70 whitespace-nowrap">
+                              {isEditing ? (
+                                <input
+                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
+                                  value={editValues.school ?? ''}
+                                  onChange={(e) => setEditValues((v) => ({ ...v, school: e.target.value }))}
+                                />
+                              ) : (
+                                SCHOOL_SHORT[r.school] ?? r.school
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-[0.78rem] text-white/55 whitespace-nowrap">
+                              {isEditing ? (
+                                <input
+                                  type="number"
+                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-20"
+                                  value={editValues.graduation_year ?? ''}
+                                  onChange={(e) => setEditValues((v) => ({ ...v, graduation_year: Number(e.target.value) }))}
+                                />
+                              ) : (
+                                r.graduation_year
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-[0.78rem] text-white/50">
+                              {isEditing ? (
+                                <input
+                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-32"
+                                  value={editValues.major ?? ''}
+                                  onChange={(e) => setEditValues((v) => ({ ...v, major: e.target.value }))}
+                                />
+                              ) : (
+                                r.major ?? <span className="text-white/20 italic">—</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-[0.78rem] text-white/50">
+                              {isEditing ? (
+                                <input
+                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-32"
+                                  value={editValues.dietary_restrictions ?? ''}
+                                  onChange={(e) => setEditValues((v) => ({ ...v, dietary_restrictions: e.target.value }))}
+                                />
+                              ) : r.dietary_restrictions ? (
+                                <span className="text-gold/70">{r.dietary_restrictions}</span>
+                              ) : (
+                                <span className="text-white/20 italic">—</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-[0.72rem] text-white/30 whitespace-nowrap">
+                              {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              {isEditing ? (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => saveEdit(r.id)}
+                                    disabled={saving}
+                                    className="p-1.5 rounded text-green-400 hover:bg-green-400/10 transition-colors disabled:opacity-40"
+                                    title="Save"
+                                  >
+                                    <Check size={13} />
+                                  </button>
+                                  <button
+                                    onClick={cancelEdit}
+                                    className="p-1.5 rounded text-white/40 hover:bg-white/10 transition-colors"
+                                    title="Cancel"
+                                  >
+                                    <X size={13} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => startEdit(r)}
+                                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-white/85 hover:bg-white/[0.06] transition-colors"
+                                    title="Edit"
+                                  >
+                                    <Pencil size={13} />
+                                    <span className="text-[0.72rem]">Edit</span>
+                                  </button>
+                                  <button
+                                    onClick={() => setDeletingId(r.id)}
+                                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-red-400 hover:bg-red-400/[0.08] transition-colors"
+                                    title="Delete"
+                                  >
+                                    <Trash2 size={13} />
+                                    <span className="text-[0.72rem]">Remove</span>
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </motion.div>
 
         </motion.div>

@@ -115,13 +115,13 @@ export default function ManageRSVPPage() {
           <motion.div variants={stagger} initial="hidden" animate="visible">
             <motion.div variants={fadeInUp} className="mb-7">
               <Link href="/rsvp" className="inline-flex items-center gap-1.5 text-[0.75rem] text-white/40 hover:text-white/70 transition-colors">
-                <ArrowLeft size={13} /> Back to RSVP
+                <ArrowLeft size={13} /> Back to Join Waitlist
               </Link>
             </motion.div>
             <motion.div variants={fadeInUp} className="accent-line mb-6" />
             <motion.p variants={fadeInUp} className="text-eyebrow mb-4">Manage Registration</motion.p>
             <motion.h1 variants={fadeInUp} className="text-editorial text-2xl md:text-3xl text-white">
-              Update Your RSVP
+              Update Your Waitlist Entry
             </motion.h1>
           </motion.div>
         </div>

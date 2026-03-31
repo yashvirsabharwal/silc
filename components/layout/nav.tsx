@@ -60,8 +60,8 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
-          <Link href="/rsvp" className="btn-primary !py-2 !px-4 !text-[0.68rem]">
-            RSVP
+          <Link href="/rsvp" className="btn-primary !py-2 !px-3 !text-[0.64rem]">
+            Join Waitlist
           </Link>
           <Link href="/admin" className="text-[0.7rem] text-white/25 hover:text-white/60 transition-colors duration-300">
             Admin
@@ -98,7 +98,7 @@ export function Nav() {
                 </Link>
               ))}
               <Link href="/rsvp" onClick={() => setMobileOpen(false)} className="btn-primary mt-4 text-center">
-                RSVP
+                Join Waitlist
               </Link>
               <Link href="/admin" onClick={() => setMobileOpen(false)} className="text-[0.75rem] text-white/25 hover:text-white/60 transition-colors text-center mt-2">
                 Admin
