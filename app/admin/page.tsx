@@ -44,6 +44,7 @@ export default function AdminPage() {
   const [addValues, setAddValues] = useState({ full_name: '', email: '', school: '', graduation_year: '', major: '', dietary_restrictions: '' })
   const [addError, setAddError] = useState('')
   const [actionError, setActionError] = useState('')
+  const [activeTab, setActiveTab] = useState<'confirmed' | 'waitlist'>('confirmed')
 
   const fetchRSVPs = useCallback(async () => {
     setLoading(true)
@@ -286,15 +287,34 @@ export default function AdminPage() {
             </div>
           </motion.div>
 
-          {/* Table header */}
+          {/* Tabs + actions */}
           <motion.div variants={fadeInUp} className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-[0.9rem] text-white font-medium">Registrations</h2>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setActiveTab('confirmed')}
+                className={`px-3.5 py-1.5 rounded-md text-[0.78rem] font-medium transition-colors ${
+                  activeTab === 'confirmed'
+                    ? 'bg-white/[0.08] text-white'
+                    : 'text-white/40 hover:text-white/60'
+                }`}
+              >
+                Confirmed <span className={activeTab === 'confirmed' ? 'text-green-400' : 'text-white/25'}>{confirmedRsvps.length}</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('waitlist')}
+                className={`px-3.5 py-1.5 rounded-md text-[0.78rem] font-medium transition-colors ${
+                  activeTab === 'waitlist'
+                    ? 'bg-white/[0.08] text-white'
+                    : 'text-white/40 hover:text-white/60'
+                }`}
+              >
+                Waitlist <span className={activeTab === 'waitlist' ? 'text-amber-400' : 'text-white/25'}>{waitlistRsvps.length}</span>
+              </button>
               {lastRefreshed && (
-                <p className="text-[0.65rem] text-white/25 mt-0.5">
-                  Last updated {lastRefreshed.toLocaleTimeString()}
-                  {dietaryCount > 0 && ` · ${dietaryCount} dietary restriction${dietaryCount > 1 ? 's' : ''}`}
-                </p>
+                <span className="text-[0.62rem] text-white/20 ml-3">
+                  Updated {lastRefreshed.toLocaleTimeString()}
+                  {dietaryCount > 0 && ` · ${dietaryCount} dietary`}
+                </span>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -401,336 +421,184 @@ export default function AdminPage() {
             </motion.div>
           )}
 
-          {/* RSVPs table */}
-          <motion.div variants={fadeInUp} className="border border-midnight-border rounded-lg overflow-hidden">
-            {loading ? (
-              <div className="flex items-center justify-center py-16 text-white/30 text-sm">
-                <RefreshCw size={16} className="animate-spin mr-2" /> Loading...
-              </div>
-            ) : confirmedRsvps.length === 0 ? (
-              <div className="flex items-center justify-center py-16 text-white/30 text-sm">
-                No RSVPs yet.
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-midnight-border bg-white/[0.02]">
-                      {['Name', 'Email', 'School', 'Year', 'Major', 'Dietary', 'Registered', ''].map((h) => (
-                        <th key={h} className="px-4 py-3 text-[0.62rem] text-white/35 tracking-wider uppercase font-medium whitespace-nowrap">
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {confirmedRsvps.map((r, i) => {
-                      const isEditing = editingId === r.id
-                      return (
-                        <tr
-                          key={r.id}
-                          className={`border-b border-midnight-border/50 transition-colors ${
-                            isEditing ? 'bg-gold/[0.04]' : i % 2 === 0 ? 'hover:bg-white/[0.02]' : 'bg-white/[0.01] hover:bg-white/[0.02]'
-                          }`}
-                        >
-                          <td className="px-4 py-3 text-[0.82rem] whitespace-nowrap font-medium">
-                            {isEditing ? (
-                              <input
-                                className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-36"
-                                value={editValues.full_name ?? ''}
-                                onChange={(e) => setEditValues((v) => ({ ...v, full_name: e.target.value }))}
-                              />
-                            ) : (
-                              <span className="text-white/90">{r.full_name}</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-[0.78rem] whitespace-nowrap">
-                            {isEditing ? (
-                              <input
-                                className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
-                                value={editValues.email ?? ''}
-                                onChange={(e) => setEditValues((v) => ({ ...v, email: e.target.value }))}
-                              />
-                            ) : (
-                              <span className="text-white/55">{r.email}</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-[0.78rem] text-white/70 whitespace-nowrap">
-                            {isEditing ? (
-                              <input
-                                className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
-                                value={editValues.school ?? ''}
-                                onChange={(e) => setEditValues((v) => ({ ...v, school: e.target.value }))}
-                              />
-                            ) : (
-                              SCHOOL_SHORT[r.school] ?? r.school
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-[0.78rem] text-white/55 whitespace-nowrap">
-                            {isEditing ? (
-                              <input
-                                type="number"
-                                className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-20"
-                                value={editValues.graduation_year ?? ''}
-                                onChange={(e) => setEditValues((v) => ({ ...v, graduation_year: Number(e.target.value) }))}
-                              />
-                            ) : (
-                              r.graduation_year
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-[0.78rem] text-white/50">
-                            {isEditing ? (
-                              <input
-                                className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-32"
-                                value={editValues.major ?? ''}
-                                onChange={(e) => setEditValues((v) => ({ ...v, major: e.target.value }))}
-                              />
-                            ) : (
-                              r.major ?? <span className="text-white/20 italic">—</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-[0.78rem] text-white/50">
-                            {isEditing ? (
-                              <input
-                                className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-32"
-                                value={editValues.dietary_restrictions ?? ''}
-                                onChange={(e) => setEditValues((v) => ({ ...v, dietary_restrictions: e.target.value }))}
-                              />
-                            ) : r.dietary_restrictions ? (
-                              <span className="text-gold/70">{r.dietary_restrictions}</span>
-                            ) : (
-                              <span className="text-white/20 italic">—</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-[0.72rem] text-white/30 whitespace-nowrap">
-                            {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            {isEditing ? (
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => saveEdit(r.id)}
-                                  disabled={saving}
-                                  className="p-1.5 rounded text-green-400 hover:bg-green-400/10 transition-colors disabled:opacity-40"
-                                  title="Save"
-                                >
-                                  <Check size={13} />
-                                </button>
-                                <button
-                                  onClick={cancelEdit}
-                                  className="p-1.5 rounded text-white/40 hover:bg-white/10 transition-colors"
-                                  title="Cancel"
-                                >
-                                  <X size={13} />
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => startEdit(r)}
-                                  className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-white/85 hover:bg-white/[0.06] transition-colors"
-                                  title="Edit"
-                                >
-                                  <Pencil size={13} />
-                                  <span className="text-[0.72rem]">Edit</span>
-                                </button>
-                                <button
-                                  onClick={() => toggleStatus(r.id, 'waitlist')}
-                                  className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-amber-400 hover:bg-amber-400/[0.08] transition-colors"
-                                  title="Move to Waitlist"
-                                >
-                                  <ArrowDownCircle size={13} />
-                                  <span className="text-[0.72rem]">Waitlist</span>
-                                </button>
-                                <button
-                                  onClick={() => setDeletingId(r.id)}
-                                  className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-red-400 hover:bg-red-400/[0.08] transition-colors"
-                                  title="Delete"
-                                >
-                                  <Trash2 size={13} />
-                                  <span className="text-[0.72rem]">Remove</span>
-                                </button>
-                              </div>
-                            )}
-                          </td>
+          {/* Unified table */}
+          {(() => {
+            const activeRows = activeTab === 'confirmed' ? confirmedRsvps : waitlistRsvps
+            const emptyLabel = activeTab === 'confirmed' ? 'No confirmed RSVPs yet.' : 'No waitlist signups yet.'
+            return (
+              <motion.div variants={fadeInUp} className="border border-midnight-border rounded-lg overflow-hidden">
+                {loading ? (
+                  <div className="flex items-center justify-center py-16 text-white/30 text-sm">
+                    <RefreshCw size={16} className="animate-spin mr-2" /> Loading...
+                  </div>
+                ) : activeRows.length === 0 ? (
+                  <div className="flex items-center justify-center py-16 text-white/30 text-sm">
+                    {emptyLabel}
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-midnight-border bg-white/[0.02]">
+                          {['Name', 'Email', 'School', 'Year', 'Major', 'Dietary', 'Registered', ''].map((h) => (
+                            <th key={h} className="px-4 py-3 text-[0.62rem] text-white/35 tracking-wider uppercase font-medium whitespace-nowrap">
+                              {h}
+                            </th>
+                          ))}
                         </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Waitlist table */}
-          <motion.div variants={fadeInUp} className="mt-8">
-            <div className="flex items-end justify-between mb-3">
-              <div>
-                <h2 className="text-[0.9rem] text-white font-medium">Waitlist</h2>
-                <p className="text-[0.65rem] text-white/25 mt-0.5">{waitlistRsvps.length} on waitlist</p>
-              </div>
-            </div>
-
-            <div className="border border-midnight-border rounded-lg overflow-hidden">
-              {loading ? (
-                <div className="flex items-center justify-center py-12 text-white/30 text-sm">
-                  <RefreshCw size={16} className="animate-spin mr-2" /> Loading...
-                </div>
-              ) : waitlistRsvps.length === 0 ? (
-                <div className="flex items-center justify-center py-12 text-white/30 text-sm">
-                  No waitlist signups yet.
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-midnight-border bg-white/[0.02]">
-                        {['Name', 'Email', 'School', 'Year', 'Major', 'Dietary', 'Registered', ''].map((h) => (
-                          <th key={h} className="px-4 py-3 text-[0.62rem] text-white/35 tracking-wider uppercase font-medium whitespace-nowrap">
-                            {h}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {waitlistRsvps.map((r, i) => {
-                        const isEditing = editingId === r.id
-                        return (
-                          <tr
-                            key={r.id}
-                            className={`border-b border-midnight-border/50 transition-colors ${
-                              isEditing ? 'bg-gold/[0.04]' : i % 2 === 0 ? 'hover:bg-white/[0.02]' : 'bg-white/[0.01] hover:bg-white/[0.02]'
-                            }`}
-                          >
-                            <td className="px-4 py-3 text-[0.82rem] whitespace-nowrap font-medium">
-                              {isEditing ? (
-                                <input
-                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-36"
-                                  value={editValues.full_name ?? ''}
-                                  onChange={(e) => setEditValues((v) => ({ ...v, full_name: e.target.value }))}
-                                />
-                              ) : (
-                                <span className="text-white/90">{r.full_name}</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-[0.78rem] whitespace-nowrap">
-                              {isEditing ? (
-                                <input
-                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
-                                  value={editValues.email ?? ''}
-                                  onChange={(e) => setEditValues((v) => ({ ...v, email: e.target.value }))}
-                                />
-                              ) : (
-                                <span className="text-white/55">{r.email}</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-[0.78rem] text-white/70 whitespace-nowrap">
-                              {isEditing ? (
-                                <input
-                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
-                                  value={editValues.school ?? ''}
-                                  onChange={(e) => setEditValues((v) => ({ ...v, school: e.target.value }))}
-                                />
-                              ) : (
-                                SCHOOL_SHORT[r.school] ?? r.school
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-[0.78rem] text-white/55 whitespace-nowrap">
-                              {isEditing ? (
-                                <input
-                                  type="number"
-                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-20"
-                                  value={editValues.graduation_year ?? ''}
-                                  onChange={(e) => setEditValues((v) => ({ ...v, graduation_year: Number(e.target.value) }))}
-                                />
-                              ) : (
-                                r.graduation_year
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-[0.78rem] text-white/50">
-                              {isEditing ? (
-                                <input
-                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-32"
-                                  value={editValues.major ?? ''}
-                                  onChange={(e) => setEditValues((v) => ({ ...v, major: e.target.value }))}
-                                />
-                              ) : (
-                                r.major ?? <span className="text-white/20 italic">—</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-[0.78rem] text-white/50">
-                              {isEditing ? (
-                                <input
-                                  className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-32"
-                                  value={editValues.dietary_restrictions ?? ''}
-                                  onChange={(e) => setEditValues((v) => ({ ...v, dietary_restrictions: e.target.value }))}
-                                />
-                              ) : r.dietary_restrictions ? (
-                                <span className="text-gold/70">{r.dietary_restrictions}</span>
-                              ) : (
-                                <span className="text-white/20 italic">—</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-[0.72rem] text-white/30 whitespace-nowrap">
-                              {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              {isEditing ? (
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => saveEdit(r.id)}
-                                    disabled={saving}
-                                    className="p-1.5 rounded text-green-400 hover:bg-green-400/10 transition-colors disabled:opacity-40"
-                                    title="Save"
-                                  >
-                                    <Check size={13} />
-                                  </button>
-                                  <button
-                                    onClick={cancelEdit}
-                                    className="p-1.5 rounded text-white/40 hover:bg-white/10 transition-colors"
-                                    title="Cancel"
-                                  >
-                                    <X size={13} />
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => toggleStatus(r.id, 'rsvp')}
-                                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-green-400 hover:bg-green-400/[0.08] transition-colors"
-                                    title="Confirm RSVP"
-                                  >
-                                    <ArrowUpCircle size={13} />
-                                    <span className="text-[0.72rem]">Confirm</span>
-                                  </button>
-                                  <button
-                                    onClick={() => startEdit(r)}
-                                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-white/85 hover:bg-white/[0.06] transition-colors"
-                                    title="Edit"
-                                  >
-                                    <Pencil size={13} />
-                                    <span className="text-[0.72rem]">Edit</span>
-                                  </button>
-                                  <button
-                                    onClick={() => setDeletingId(r.id)}
-                                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-red-400 hover:bg-red-400/[0.08] transition-colors"
-                                    title="Delete"
-                                  >
-                                    <Trash2 size={13} />
-                                    <span className="text-[0.72rem]">Remove</span>
-                                  </button>
-                                </div>
-                              )}
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </motion.div>
+                      </thead>
+                      <tbody>
+                        {activeRows.map((r, i) => {
+                          const isEditing = editingId === r.id
+                          return (
+                            <tr
+                              key={r.id}
+                              className={`border-b border-midnight-border/50 transition-colors ${
+                                isEditing ? 'bg-gold/[0.04]' : i % 2 === 0 ? 'hover:bg-white/[0.02]' : 'bg-white/[0.01] hover:bg-white/[0.02]'
+                              }`}
+                            >
+                              <td className="px-4 py-3 text-[0.82rem] whitespace-nowrap font-medium">
+                                {isEditing ? (
+                                  <input
+                                    className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-36"
+                                    value={editValues.full_name ?? ''}
+                                    onChange={(e) => setEditValues((v) => ({ ...v, full_name: e.target.value }))}
+                                  />
+                                ) : (
+                                  <span className="text-white/90">{r.full_name}</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-[0.78rem] whitespace-nowrap">
+                                {isEditing ? (
+                                  <input
+                                    className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
+                                    value={editValues.email ?? ''}
+                                    onChange={(e) => setEditValues((v) => ({ ...v, email: e.target.value }))}
+                                  />
+                                ) : (
+                                  <span className="text-white/55">{r.email}</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-[0.78rem] text-white/70 whitespace-nowrap">
+                                {isEditing ? (
+                                  <input
+                                    className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-44"
+                                    value={editValues.school ?? ''}
+                                    onChange={(e) => setEditValues((v) => ({ ...v, school: e.target.value }))}
+                                  />
+                                ) : (
+                                  SCHOOL_SHORT[r.school] ?? r.school
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-[0.78rem] text-white/55 whitespace-nowrap">
+                                {isEditing ? (
+                                  <input
+                                    type="number"
+                                    className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-20"
+                                    value={editValues.graduation_year ?? ''}
+                                    onChange={(e) => setEditValues((v) => ({ ...v, graduation_year: Number(e.target.value) }))}
+                                  />
+                                ) : (
+                                  r.graduation_year
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-[0.78rem] text-white/50">
+                                {isEditing ? (
+                                  <input
+                                    className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-32"
+                                    value={editValues.major ?? ''}
+                                    onChange={(e) => setEditValues((v) => ({ ...v, major: e.target.value }))}
+                                  />
+                                ) : (
+                                  r.major ?? <span className="text-white/20 italic">—</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-[0.78rem] text-white/50">
+                                {isEditing ? (
+                                  <input
+                                    className="bg-white/[0.07] border border-white/15 rounded px-2 py-1 text-[0.8rem] text-white w-32"
+                                    value={editValues.dietary_restrictions ?? ''}
+                                    onChange={(e) => setEditValues((v) => ({ ...v, dietary_restrictions: e.target.value }))}
+                                  />
+                                ) : r.dietary_restrictions ? (
+                                  <span className="text-gold/70">{r.dietary_restrictions}</span>
+                                ) : (
+                                  <span className="text-white/20 italic">—</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-[0.72rem] text-white/30 whitespace-nowrap">
+                                {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                {isEditing ? (
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => saveEdit(r.id)}
+                                      disabled={saving}
+                                      className="p-1.5 rounded text-green-400 hover:bg-green-400/10 transition-colors disabled:opacity-40"
+                                      title="Save"
+                                    >
+                                      <Check size={13} />
+                                    </button>
+                                    <button
+                                      onClick={cancelEdit}
+                                      className="p-1.5 rounded text-white/40 hover:bg-white/10 transition-colors"
+                                      title="Cancel"
+                                    >
+                                      <X size={13} />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-2">
+                                    {activeTab === 'waitlist' && (
+                                      <button
+                                        onClick={() => toggleStatus(r.id, 'rsvp')}
+                                        className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-green-400 hover:bg-green-400/[0.08] transition-colors"
+                                        title="Confirm RSVP"
+                                      >
+                                        <ArrowUpCircle size={13} />
+                                        <span className="text-[0.72rem]">Confirm</span>
+                                      </button>
+                                    )}
+                                    <button
+                                      onClick={() => startEdit(r)}
+                                      className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-white/85 hover:bg-white/[0.06] transition-colors"
+                                      title="Edit"
+                                    >
+                                      <Pencil size={13} />
+                                      <span className="text-[0.72rem]">Edit</span>
+                                    </button>
+                                    {activeTab === 'confirmed' && (
+                                      <button
+                                        onClick={() => toggleStatus(r.id, 'waitlist')}
+                                        className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-amber-400 hover:bg-amber-400/[0.08] transition-colors"
+                                        title="Move to Waitlist"
+                                      >
+                                        <ArrowDownCircle size={13} />
+                                        <span className="text-[0.72rem]">Waitlist</span>
+                                      </button>
+                                    )}
+                                    <button
+                                      onClick={() => setDeletingId(r.id)}
+                                      className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded text-white/60 hover:text-red-400 hover:bg-red-400/[0.08] transition-colors"
+                                      title="Delete"
+                                    >
+                                      <Trash2 size={13} />
+                                      <span className="text-[0.72rem]">Remove</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </motion.div>
+            )
+          })()}
 
         </motion.div>
       </div>
